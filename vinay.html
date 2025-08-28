@@ -1,0 +1,1699 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The Variational Quantum Classifier Algorithm: A Comprehensive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body { 
+            overflow-x: hidden; 
+        }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-sans { font-family: 'Inter', sans-serif; }
+        .toc-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-right: 1px solid #e2e8f0;
+            overflow-y: auto;
+            z-index: 50;
+            padding: 2rem 1.5rem;
+        }
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+        .quantum-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+        }
+        .quantum-text {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .citation-link {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted #6366f1;
+        }
+        .citation-link:hover {
+            background-color: #f1f5f9;
+            border-bottom: 1px solid #6366f1;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 2rem;
+            height: 60vh;
+        }
+        .bento-main {
+            grid-row: 1 / -1;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+        .bento-side-1 {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        .bento-side-2 {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0;
+            color: #64748b;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            padding-left: 1rem;
+            transition: all 0.2s ease;
+        }
+        .toc-link:hover {
+            color: #6366f1;
+            border-left-color: #6366f1;
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+        .toc-link.active {
+            color: #6366f1;
+            border-left-color: #6366f1;
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%);
+        }
+        
+        /* Mermaid diagram styling */
+        .mermaid-container {
+            display: flex;
+            justify-content: center;
+            min-height: 300px;
+            max-height: 800px;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mermaid-container .mermaid {
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+            cursor: grab;
+            transition: transform 0.3s ease;
+            transform-origin: center center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .mermaid-container .mermaid svg {
+            max-width: 100%;
+            height: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .mermaid-container .mermaid:active {
+            cursor: grabbing;
+        }
+
+        .mermaid-container.zoomed .mermaid {
+            height: 100%;
+            width: 100%;
+            cursor: grab;
+        }
+
+        .mermaid-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mermaid-control-btn {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #374151;
+            font-size: 14px;
+            min-width: 36px;
+            height: 36px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mermaid-control-btn:hover {
+            background: #f8fafc;
+            border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-1px);
+        }
+
+        .mermaid-control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Enhanced mermaid text contrast and styling */
+        .mermaid .node rect,
+        .mermaid .node circle,
+        .mermaid .node ellipse,
+        .mermaid .node polygon {
+            stroke-width: 2px;
+            stroke: #374151 !important;
+        }
+        
+        .mermaid .node .label,
+        .mermaid .nodeLabel,
+        .mermaid .edgeLabel {
+            color: #1f2937 !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            font-family: 'Inter', sans-serif !important;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        .mermaid .edgePath .path {
+            stroke: #6b7280 !important;
+            stroke-width: 2px;
+        }
+        
+        .mermaid .marker {
+            fill: #6b7280 !important;
+            stroke: #6b7280 !important;
+        }
+        
+        /* Ensure high contrast for different node colors */
+        .mermaid .node[style*="fill:#e0e7ff"] .label,
+        .mermaid .node[style*="fill:#dbeafe"] .label,
+        .mermaid .node[style*="fill:#f0f9ff"] .label,
+        .mermaid .node[style*="fill:#f0fdf4"] .label {
+            color: #1e40af !important;
+            font-weight: 600 !important;
+        }
+        
+        .mermaid .node[style*="fill:#fef3c7"] .label,
+        .mermaid .node[style*="fill:#fed7aa"] .label {
+            color: #92400e !important;
+            font-weight: 600 !important;
+        }
+        
+        @media (max-width: 1024px) {
+            .toc-fixed {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .toc-fixed.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        /* Responsive mermaid controls */
+        @media (max-width: 1024px) {
+            .mermaid-control-btn:not(.reset-zoom) {
+                display: none;
+            }
+            .mermaid-controls {
+                top: auto;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+  </head>
+
+  <body class="bg-white text-gray-900 font-sans">
+    <!-- Mobile TOC Toggle -->
+    <button id="toc-toggle" class="lg:hidden fixed top-4 left-4 z-50 bg-indigo-600 text-white p-3 rounded-lg shadow-lg">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Table of Contents -->
+    <nav id="toc" class="toc-fixed">
+      <div class="mb-8">
+        <h2 class="font-serif text-xl font-bold text-gray-900 mb-4">Contents</h2>
+      </div>
+
+      <div class="space-y-2">
+        <a href="#introduction" class="toc-link">Introduction</a>
+        <a href="#core-concepts" class="toc-link">Core Concepts</a>
+        <div class="ml-4 space-y-1">
+          <a href="#vqc-framework" class="toc-link text-sm">VQC Framework</a>
+          <a href="#quantum-states" class="toc-link text-sm">Quantum States</a>
+        </div>
+        <a href="#algorithm-breakdown" class="toc-link">Algorithm Breakdown</a>
+        <div class="ml-4 space-y-1">
+          <a href="#data-encoding" class="toc-link text-sm">Data Encoding</a>
+          <a href="#ansatz" class="toc-link text-sm">Parameterized Circuit</a>
+          <a href="#measurement" class="toc-link text-sm">Measurement</a>
+        </div>
+        <a href="#mathematical-foundations" class="toc-link">Mathematical Foundations</a>
+        <div class="ml-4 space-y-1">
+          <a href="#cost-function" class="toc-link text-sm">Cost Function</a>
+          <a href="#gradient-calculation" class="toc-link text-sm">Gradient Calculation</a>
+          <a href="#optimization" class="toc-link text-sm">Optimization</a>
+        </div>
+        <a href="#implementation" class="toc-link">Implementation</a>
+        <div class="ml-4 space-y-1">
+          <a href="#pennylane-setup" class="toc-link text-sm">PennyLane Setup</a>
+          <a href="#building-vqc" class="toc-link text-sm">Building VQC</a>
+          <a href="#training" class="toc-link text-sm">Training</a>
+        </div>
+        <a href="#anomaly-detection" class="toc-link">Anomaly Detection</a>
+        <div class="ml-4 space-y-1">
+          <a href="#framing-problem" class="toc-link text-sm">Framing the Problem</a>
+          <a href="#case-study" class="toc-link text-sm">Case Study</a>
+          <a href="#evaluation" class="toc-link text-sm">Evaluation</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Section with Bento Layout -->
+      <section class="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div class="container mx-auto px-8 py-16">
+          <!-- Bento Grid Layout -->
+          <div class="bento-grid mb-16">
+            <!-- Main Content Area -->
+            <div class="bento-main quantum-gradient relative">
+              <img src="https://kimi-web-img.moonshot.cn/img/media.craiyon.com/faf60b33fa53c5b4d2beb0545298a17f2f559b91.webp" alt="Abstract quantum computing visualization with glowing particles" class="w-full h-full object-cover" size="wallpaper" aspect="wide" color="blue" query="quantum computing abstract background" referrerpolicy="no-referrer" data-modified="1" data-score="0.00"/>
+              <div class="hero-overlay"></div>
+              <div class="absolute inset-0 flex items-center justify-center p-8">
+                <div class="text-center text-white">
+                  <h1 class="font-serif text-4xl lg:text-6xl font-bold mb-6 leading-tight">
+                    <em>The Variational Quantum Classifier</em>
+                  </h1>
+                  <p class="text-xl lg:text-2xl font-light opacity-90 max-w-2xl">
+                    A comprehensive theoretical and practical guide to quantum machine learning for anomaly detection
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side Panel 1 -->
+            <div class="bento-side-1">
+              <div class="flex items-center mb-4">
+                <i class="fas fa-atom text-3xl text-indigo-600 mr-3"></i>
+                <h3 class="font-serif text-xl font-bold text-gray-900">Quantum Advantage</h3>
+              </div>
+              <p class="text-gray-700 leading-relaxed">
+                VQCs leverage quantum superposition and entanglement to process high-dimensional data more efficiently than classical algorithms.
+              </p>
+            </div>
+
+            <!-- Side Panel 2 -->
+            <div class="bento-side-2">
+              <div class="flex items-center mb-4">
+                <i class="fas fa-chart-line text-3xl text-amber-600 mr-3"></i>
+                <h3 class="font-serif text-xl font-bold text-gray-900">Hybrid Architecture</h3>
+              </div>
+              <p class="text-gray-700 leading-relaxed">
+                Combining quantum processing with classical optimization creates powerful machine learning models for real-world applications.
+              </p>
+            </div>
+          </div>
+
+          <!-- Key Highlights -->
+          <div class="grid md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+              <div class="text-indigo-600 text-3xl mb-4">
+                <i class="fas fa-microscope"></i>
+              </div>
+              <h3 class="font-serif text-xl font-bold mb-3">Theoretical Foundation</h3>
+              <p class="text-gray-600">Complete mathematical derivation of quantum states, cost functions, and optimization processes.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+              <div class="text-purple-600 text-3xl mb-4">
+                <i class="fas fa-code"></i>
+              </div>
+              <h3 class="font-serif text-xl font-bold mb-3">Practical Implementation</h3>
+              <p class="text-gray-600">Step-by-step code examples using PennyLane for building and training VQC models.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+              <div class="text-pink-600 text-3xl mb-4">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3 class="font-serif text-xl font-bold mb-3">Anomaly Detection</h3>
+              <p class="text-gray-600">Application to fraud detection with performance metrics and evaluation strategies.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Introduction Section -->
+      <section id="introduction" class="py-20 bg-white">
+        <div class="container mx-auto px-8 max-w-4xl">
+          <h2 class="font-serif text-4xl font-bold mb-8 quantum-text">Introduction</h2>
+
+          <div class="prose prose-lg max-w-none">
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              The Variational Quantum Classifier (VQC) represents a breakthrough in quantum machine learning, offering a practical approach to classification and anomaly detection problems. This hybrid quantum-classical algorithm combines the computational advantages of quantum systems with the robust optimization capabilities of classical computing.
+            </p>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 my-8">
+              <div class="flex items-start">
+                <i class="fas fa-lightbulb text-blue-500 text-2xl mr-4 mt-1"></i>
+                <div>
+                  <h3 class="font-serif text-xl font-bold text-blue-900 mb-2">Key Innovation</h3>
+                  <p class="text-blue-800">
+                    VQCs operate within the constraints of NISQ-era quantum devices by offloading parameter optimization to classical computers, minimizing quantum circuit depth and error accumulation.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-gray-700 leading-relaxed mb-6">
+              The algorithm&#39;s versatility makes it particularly suitable for anomaly detection in transaction data, where it can identify fraudulent activities by learning patterns from both labeled and unlabeled datasets. Through quantum state manipulation and measurement, VQCs can capture complex correlations that classical algorithms might miss.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Core Concepts Section -->
+      <section id="core-concepts" class="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div class="container mx-auto px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold mb-12 quantum-text">Core Concepts</h2>
+
+          <!-- VQC Framework -->
+          <div id="vqc-framework" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">The VQC Framework in Quantum Machine Learning</h3>
+
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+              <div>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                  The Variational Quantum Classifier operates within a hybrid quantum-classical computational paradigm, designed to leverage the strengths of both quantum and classical processors. This framework is particularly well-suited for the current era of <strong>Noisy Intermediate-Scale Quantum (NISQ)</strong> devices <a href="https://www.spinquanta.com/news-detail/quantum-variational-formula-explained-with-examples" class="citation-link">[182]</a>.
+                </p>
+
+                <p class="text-gray-700 leading-relaxed mb-6">
+                  The core idea involves using a quantum computer to evaluate parameterized quantum circuits while a classical computer handles the optimization of these parameters. This division of labor minimizes the computational load on quantum devices, reducing circuit depth and error accumulation <a href="https://ojs.aaai.org/index.php/AAAI/article/view/26965/26737" class="citation-link">[187]</a>.
+                </p>
+              </div>
+
+              <div class="bg-white rounded-lg p-6 shadow-lg">
+                <h4 class="font-serif text-xl font-bold mb-4 text-gray-900">Four-Step Process</h4>
+                <ul class="space-y-3">
+                  <li class="flex items-center">
+                    <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium mr-3">1</span>
+                    <span class="text-gray-700">Data encoding into quantum states</span>
+                  </li>
+                  <li class="flex items-center">
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mr-3">2</span>
+                    <span class="text-gray-700">Parameterized quantum circuit (ansatz)</span>
+                  </li>
+                  <li class="flex items-center">
+                    <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium mr-3">3</span>
+                    <span class="text-gray-700">Measurement and classical post-processing</span>
+                  </li>
+                  <li class="flex items-center">
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mr-3">4</span>
+                    <span class="text-gray-700">Classical parameter optimization</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-8 mb-8">
+              <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Key Components</h4>
+
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                  <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-database text-indigo-600 text-2xl"></i>
+                  </div>
+                  <h5 class="font-semibold text-gray-900 mb-2">Data Encoding</h5>
+                  <p class="text-gray-600 text-sm">Maps classical features to quantum states using angle, amplitude, or basis encoding</p>
+                </div>
+
+                <div class="text-center">
+                  <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-project-diagram text-purple-600 text-2xl"></i>
+                  </div>
+                  <h5 class="font-semibold text-gray-900 mb-2">Parameterized Ansatz</h5>
+                  <p class="text-gray-600 text-sm">Trainable quantum circuit with rotation and entangling gates</p>
+                </div>
+
+                <div class="text-center">
+                  <div class="bg-pink-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-ruler text-pink-600 text-2xl"></i>
+                  </div>
+                  <h5 class="font-semibold text-gray-900 mb-2">Measurement</h5>
+                  <p class="text-gray-600 text-sm">Extracts classical information through expectation values</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quantum States -->
+          <div id="quantum-states" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Mathematical Representation of Quantum States</h3>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+              <div>
+                <h4 class="font-serif text-2xl font-bold mb-4 text-gray-900">State Vectors and Bloch Sphere</h4>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                  A single qubit state is represented as a linear combination of basis states: |ψ⟩ = α|0⟩ + β|1⟩, where α and β are complex amplitudes satisfying |α|² + |β|² = 1.
+                </p>
+
+                <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+                  <h5 class="font-semibold text-gray-900 mb-2">Bloch Sphere Visualization</h5>
+                  <p class="text-gray-600 text-sm mb-3">
+                    The state of a single qubit can be visualized on a three-dimensional sphere where:
+                  </p>
+                  <ul class="text-gray-600 text-sm space-y-1">
+                    <li>• North pole: |0⟩ state</li>
+                    <li>• South pole: |1⟩ state</li>
+                    <li>• Other points: Superposition states</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-serif text-2xl font-bold mb-4 text-gray-900">Density Matrices</h4>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                  For mixed states, we use density matrices: ρ = Σᵢ pᵢ|ψᵢ⟩⟨ψᵢ|, where pᵢ are probabilities. The purity Tr(ρ²) distinguishes pure (Tr(ρ²) = 1) from mixed states (Tr(ρ²) &lt; 1). </p>
+
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <h5 class="font-semibold text-blue-900 mb-2">Mathematical Properties</h5>
+                      <ul class="text-blue-800 text-sm space-y-1">
+                        <li>• Hermitian: ρ = ρ†</li>
+                        <li>• Positive semi-definite</li>
+                        <li>• Trace unity: Tr(ρ) = 1</li>
+                        <li>• Purity: 1/d ≤ Tr(ρ²) ≤ 1</li>
+                      </ul>
+                    </div>
+                </div>
+              </div>
+
+              <!-- Mermaid Diagram -->
+              <div class="bg-white rounded-xl p-8 shadow-lg border border-gray-100">
+                <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900 text-center">VQC Architecture Flow</h4>
+                <div class="mermaid-container">
+                  <div class="mermaid-controls">
+                    <button class="mermaid-control-btn zoom-in" title="放大">
+                      <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="mermaid-control-btn zoom-out" title="缩小">
+                      <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button class="mermaid-control-btn reset-zoom" title="重置">
+                      <i class="fas fa-expand-arrows-alt"></i>
+                    </button>
+                    <button class="mermaid-control-btn fullscreen" title="全屏查看">
+                      <i class="fas fa-expand"></i>
+                    </button>
+                  </div>
+                  <div class="mermaid">
+                    graph TD
+                    A[&#34;Classical Data
+                    <br/>x = (x₁, x₂, ..., xₙ)&#34;] --&gt; B[&#34;Data Encoding&#34;]
+                    B --&gt; C[&#34;Quantum State
+                    <br/>|ψ(x)⟩&#34;]
+                    C --&gt; D[&#34;Parameterized Ansatz
+                    <br/>U(θ)&#34;]
+                    D --&gt; E[&#34;Transformed State
+                    <br/>U(θ)|ψ(x)⟩&#34;]
+                    E --&gt; F[&#34;Measurement
+                    <br/>⟨Z⟩ = ⟨ψ(x)|U†(θ)ZU(θ)|ψ(x)⟩&#34;]
+                    F --&gt; G[&#34;Classical Post-processing&#34;]
+                    G --&gt; H[&#34;Cost Function
+                    <br/>L(θ) = -[y log(p) + (1-y)log(1-p)]&#34;]
+                    H --&gt; I[&#34;Classical Optimizer&#34;]
+                    I --&gt; J[&#34;Parameter Update
+                    <br/>θ → θ - η∇L(θ)&#34;]
+                    J --&gt; D
+
+                    style A fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e40af
+                    style B fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a
+                    style C fill:#f0f9ff,stroke:#0ea5e9,stroke-width:2px,color:#0c4a6e
+                    style D fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#14532d
+                    style E fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#14532d
+                    style F fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+                    style G fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+                    style H fill:#fed7aa,stroke:#ea580c,stroke-width:2px,color:#9a3412
+                    style I fill:#fed7aa,stroke:#ea580c,stroke-width:2px,color:#9a3412
+                    style J fill:#ffe4e6,stroke:#e11d48,stroke-width:2px,color:#9f1239
+                  </div>
+                </div>
+              </div>
+            </div>
+      </div></section>
+
+      <!-- Algorithm Breakdown Section -->
+      <section id="algorithm-breakdown" class="py-20 bg-white">
+        <div class="container mx-auto px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold mb-12 quantum-text">The VQC Algorithm: A Step-by-Step Breakdown</h2>
+
+          <!-- Data Encoding -->
+          <div id="data-encoding" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Step 1: Classical Data Encoding into Quantum States</h3>
+
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              The first critical step in the VQC algorithm is encoding classical data into quantum states. This process transforms classical features into quantum amplitudes or phases, enabling quantum processing <a href="https://pennylane.ai/qml/demos/tutorial_variational_classifier/" class="citation-link">[9]</a>.
+            </p>
+
+            <div class="grid lg:grid-cols-3 gap-8 mb-8">
+              <div class="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl p-6 border border-indigo-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-indigo-900">Angle Encoding</h4>
+                <p class="text-indigo-800 mb-4">Maps features to rotation angles of single-qubit gates (RY, RX, RZ).</p>
+                <div class="bg-white rounded-lg p-3">
+                  <code class="text-sm text-indigo-700">RY(x₁) ⊗ RY(x₂) ⊗ ... ⊗ RY(xₙ)</code>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-purple-900">Amplitude Encoding</h4>
+                <p class="text-purple-800 mb-4">Maps normalized data vector to quantum state amplitudes.</p>
+                <div class="bg-white rounded-lg p-3">
+                  <code class="text-sm text-purple-700">|ψ⟩ = Σᵢ xᵢ|i⟩/||x||</code>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-green-900">Basis Encoding</h4>
+                <p class="text-green-800 mb-4">Maps binary strings directly to computational basis states.</p>
+                <div class="bg-white rounded-lg p-3">
+                  <code class="text-sm text-green-700">&#39;101&#39; → |101⟩</code>
+                </div>
+              </div>
+            </div>
+
+            <!-- Encoding Comparison Table -->
+            <div class="overflow-x-auto mb-8">
+              <table class="w-full bg-white rounded-xl shadow-lg border border-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-4 text-left font-serif text-lg font-bold text-gray-900">Encoding Method</th>
+                    <th class="px-6 py-4 text-left font-serif text-lg font-bold text-gray-900">Qubit Requirement</th>
+                    <th class="px-6 py-4 text-left font-serif text-lg font-bold text-gray-900">Circuit Depth</th>
+                    <th class="px-6 py-4 text-left font-serif text-lg font-bold text-gray-900">Best For</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-semibold text-indigo-900">Angle Encoding</td>
+                    <td class="px-6 py-4 text-gray-700">Linear in features (n)</td>
+                    <td class="px-6 py-4 text-gray-700">Shallow</td>
+                    <td class="px-6 py-4 text-gray-700">Continuous data, small feature sets</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-semibold text-purple-900">Amplitude Encoding</td>
+                    <td class="px-6 py-4 text-gray-700">Logarithmic (log₂(n))</td>
+                    <td class="px-6 py-4 text-gray-700">Deep</td>
+                    <td class="px-6 py-4 text-gray-700">Large feature vectors</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-semibold text-green-900">Basis Encoding</td>
+                    <td class="px-6 py-4 text-gray-700">Linear in bits (n)</td>
+                    <td class="px-6 py-4 text-gray-700">Very shallow</td>
+                    <td class="px-6 py-4 text-gray-700">Binary or categorical data</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Ansatz -->
+          <div id="ansatz" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Step 2: The Parameterized Quantum Circuit (Ansatz)</h3>
+
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              The ansatz is the trainable component of the VQC, composed of parameterized quantum gates that transform the encoded quantum state to enable classification or anomaly detection.
+            </p>
+
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 class="font-serif text-2xl font-bold mb-4 text-gray-900">Single-Qubit Rotation Gates</h4>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                  Rotation gates RX(θ), RY(θ), and RZ(θ) perform rotations around the X, Y, and Z axes of the Bloch sphere, introducing trainable parameters.
+                </p>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                  <h5 class="font-semibold text-gray-900 mb-2">Mathematical Form</h5>
+                  <div class="space-y-2 text-sm">
+                    <div><strong>RX(θ):</strong> exp(-iθX/2)</div>
+                    <div><strong>RY(θ):</strong> exp(-iθY/2)</div>
+                    <div><strong>RZ(θ):</strong> exp(-iθZ/2)</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-serif text-2xl font-bold mb-4 text-gray-900">Multi-Qubit Entangling Gates</h4>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                  CNOT and CZ gates create entanglement between qubits, enabling complex quantum correlations essential for quantum advantage.
+                </p>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                  <h5 class="font-semibold text-gray-900 mb-2">CNOT Matrix</h5>
+                  <div class="text-sm font-mono">
+                    [[1, 0, 0, 0],
+                    <br/>
+                    [0, 1, 0, 0],
+                    <br/>
+                    [0, 0, 0, 1],
+                    <br/>
+                    [0, 0, 1, 0]]
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-8">
+              <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Designing for Expressivity and Trainability</h4>
+              <p class="text-gray-700 leading-relaxed mb-4">
+                A well-designed ansatz must balance expressivity (ability to approximate complex functions) with trainability (ease of optimization). This involves careful consideration of circuit depth and parameter count to avoid <strong>barren plateaus</strong> where gradients vanish exponentially.
+              </p>
+
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg p-4">
+                  <h5 class="font-semibold text-green-800 mb-2">Hardware-Efficient Ansatz</h5>
+                  <p class="text-gray-600 text-sm">Tailored to specific quantum device architecture with native gate set and connectivity</p>
+                </div>
+                <div class="bg-white rounded-lg p-4">
+                  <h5 class="font-semibold text-indigo-800 mb-2">Structured Ansatz</h5>
+                  <p class="text-gray-600 text-sm">Inspired by physical systems or mathematical principles with problem-specific structure</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Measurement -->
+          <div id="measurement" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Step 3: Measurement and Classical Post-Processing</h3>
+
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              The final step involves extracting classical information from quantum states through measurement and mapping these results to meaningful predictions for classification tasks.
+            </p>
+
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
+                <h4 class="font-serif text-xl font-bold mb-4 text-blue-900">Expectation Values</h4>
+                <p class="text-blue-800 mb-4">
+                  Measure Pauli-Z observable expectation values: ⟨Z⟩ = P(0) - P(1), where P(0) and P(1) are measurement probabilities.
+                </p>
+                <div class="bg-white rounded-lg p-3">
+                  <code class="text-sm text-blue-700">⟨Z⟩ = ⟨ψ|Z|ψ⟩ ∈ [-1, 1]</code>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
+                <h4 class="font-serif text-xl font-bold mb-4 text-purple-900">Probability Mapping</h4>
+                <p class="text-purple-800 mb-4">
+                  Use sigmoid function to map expectation values to class probabilities.
+                </p>
+                <div class="bg-white rounded-lg p-3">
+                  <code class="text-sm text-purple-700">p = σ(⟨Z⟩) = 1/(1 + e⁻⟨Z⟩)</code>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-6">
+              <h4 class="font-serif text-xl font-bold mb-4 text-amber-900">
+                <i class="fas fa-info-circle mr-2"></i>
+                Parity-Based Decision Rules
+              </h4>
+              <p class="text-amber-800 mb-4">
+                For anomaly detection, use multi-qubit parity measurements where odd/even parity outcomes indicate different classes. The expectation value ⟨Z₁Z₂...Zₖ⟩ relates to parity state probabilities.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mathematical Foundations -->
+      <section id="mathematical-foundations" class="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div class="container mx-auto px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold mb-12 quantum-text">Mathematical Foundations of VQC Training</h2>
+
+          <!-- Cost Function -->
+          <div id="cost-function" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">The Cost Function in VQC</h3>
+
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              The cost function quantifies model performance, providing a scalar value that guides the classical optimizer in adjusting quantum circuit parameters.
+            </p>
+
+            <div class="grid lg:grid-cols-3 gap-8 mb-8">
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-blue-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-blue-900">Cross-Entropy Loss</h4>
+                <p class="text-blue-800 mb-4 text-sm">For classification tasks</p>
+                <div class="bg-blue-50 rounded-lg p-3 mb-3">
+                  <code class="text-xs text-blue-700">L(y,p) = -[y log(p) + (1-y)log(1-p)]</code>
+                </div>
+                <p class="text-gray-600 text-xs">Measures dissimilarity between predicted and true probability distributions <a href="https://epublications.vu.lt/object/elaba:192057549/192057549.pdf" class="citation-link">[105]</a>
+                </p>
+              </div>
+
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-purple-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-purple-900">Mean Squared Error</h4>
+                <p class="text-purple-800 mb-4 text-sm">For regression and reconstruction</p>
+                <div class="bg-purple-50 rounded-lg p-3 mb-3">
+                  <code class="text-xs text-purple-700">MSE = (1/N)Σ(yᵢ - ŷᵢ)²</code>
+                </div>
+                <p class="text-gray-600 text-xs">Used in autoencoders for anomaly detection <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8749861/" class="citation-link">[76]</a>
+                </p>
+              </div>
+
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-green-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-green-900">Custom Loss Functions</h4>
+                <p class="text-green-800 mb-4 text-sm">For specialized applications</p>
+                <div class="bg-green-50 rounded-lg p-3 mb-3">
+                  <code class="text-xs text-green-700">Log-cosh, KL divergence</code>
+                </div>
+                <p class="text-gray-600 text-xs">Enhanced robustness for anomaly detection <a href="https://www.ece.nus.edu.sg/stfpage/bsikdar/papers/sj_dg_23.pdf" class="citation-link">[84]</a>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gradient Calculation -->
+          <div id="gradient-calculation" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Gradient Calculation: The Parameter-Shift Rule</h3>
+
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              The parameter-shift rule enables exact gradient calculation on quantum computers, providing the foundation for gradient-based optimization in VQC training.
+            </p>
+
+            <div class="bg-white rounded-xl p-8 shadow-lg border border-gray-200 mb-8">
+              <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Parameter-Shift Rule Formula</h4>
+
+              <div class="bg-gray-50 rounded-lg p-6 mb-6 text-center">
+                <div class="text-2xl font-mono text-gray-900">
+                  ∂⟨A⟩/∂θ = (1/2)[⟨ψ(θ+π/2)|A|ψ(θ+π/2)⟩ - ⟨ψ(θ-π/2)|A|ψ(θ-π/2)⟩]
+                </div>
+              </div>
+
+              <p class="text-gray-700 leading-relaxed">
+                This formula shows that the gradient can be computed exactly by evaluating the circuit twice with parameter shifts of ±π/2, avoiding finite-difference approximations and their associated errors <a href="https://pennylane.ai/qml/demos/tutorial_variational_classifier/" class="citation-link">[9]</a>.
+              </p>
+            </div>
+
+            <!-- Numerical Example -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8">
+              <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Numerical Example: Single Qubit RY Gate</h4>
+
+              <div class="grid lg:grid-cols-2 gap-8">
+                <div>
+                  <h5 class="font-semibold text-gray-900 mb-3">Circuit Setup</h5>
+                  <ul class="text-gray-700 space-y-2">
+                    <li>• Initial state: |0⟩</li>
+                    <li>• Gate: RY(θ)</li>
+                    <li>• Observable: Z</li>
+                    <li>• Cost function: f(θ) = ⟨Z⟩ = cos(θ)</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 class="font-semibold text-gray-900 mb-3">Gradient Calculation</h5>
+                  <ol class="text-gray-700 space-y-2 text-sm">
+                    <li><strong>1.</strong> f(θ+π/2) = cos(θ+π/2) = -sin(θ)</li>
+                    <li><strong>2.</strong> f(θ-π/2) = cos(θ-π/2) = sin(θ)</li>
+                    <li><strong>3.</strong> ∂f/∂θ = (1/2)[-sin(θ) - sin(θ)] = -sin(θ)</li>
+                    <li><strong>✓</strong> Matches analytical derivative</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optimization -->
+          <div id="optimization" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">The Optimization Process</h3>
+
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              The optimization process combines quantum circuit evaluation with classical parameter updates, creating an iterative loop that minimizes the cost function.
+            </p>
+
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Classical Optimizers</h4>
+
+                <div class="space-y-4">
+                  <div class="border-l-4 border-blue-500 pl-4">
+                    <h5 class="font-semibold text-blue-900">Gradient Descent</h5>
+                    <code class="text-sm text-gray-700">θₜ₊₁ = θₜ - η∇ℒ(θₜ)</code>
+                  </div>
+
+                  <div class="border-l-4 border-purple-500 pl-4">
+                    <h5 class="font-semibold text-purple-900">Adam</h5>
+                    <p class="text-sm text-gray-700">Adaptive moment estimation with momentum</p>
+                  </div>
+
+                  <div class="border-l-4 border-green-500 pl-4">
+                    <h5 class="font-semibold text-green-900">SGD</h5>
+                    <p class="text-sm text-gray-700">Stochastic gradient descent with mini-batches</p>
+                  </div>
+                </div>
+
+                <p class="text-gray-600 text-sm mt-4">
+                  <a href="https://pennylane.ai/qml/demos/tutorial_quantum_natural_gradient/" class="citation-link">[75]</a> Standard optimizers adapted for quantum parameter spaces.
+                </p>
+              </div>
+
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Quantum Natural Gradient</h4>
+
+                <div class="bg-indigo-50 rounded-lg p-4 mb-4">
+                  <h5 class="font-semibold text-indigo-900 mb-2">QNGD Update Rule</h5>
+                  <code class="text-sm text-indigo-700">θₜ₊₁ = θₜ - ηg⁻¹(θₜ)∇ℒ(θₜ)</code>
+                </div>
+
+                <p class="text-gray-700 mb-4">
+                  QNGD uses the Quantum Geometric Tensor (QGT) to account for the non-Euclidean geometry of quantum state space, often leading to faster convergence <a href="https://ml4physicalsciences.github.io/2019/files/NeurIPS_ML4PS_2019_7.pdf" class="citation-link">[73]</a>.
+                </p>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <h6 class="font-semibold text-yellow-900 mb-1">Challenges</h6>
+                  <ul class="text-yellow-800 text-xs space-y-1">
+                    <li>• Barren plateaus (vanishing gradients)</li>
+                    <li>• Local minima in cost landscape</li>
+                    <li>• Noise sensitivity on NISQ devices</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Implementation Section -->
+      <section id="implementation" class="py-20 bg-white">
+        <div class="container mx-auto px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold mb-12 quantum-text">Practical Implementation with PennyLane</h2>
+
+          <!-- PennyLane Setup -->
+          <div id="pennylane-setup" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Setting Up the Quantum Environment</h3>
+
+            <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-8 mb-8">
+              <p class="text-xl text-gray-700 leading-relaxed mb-6">
+                PennyLane is a powerful Python library for quantum machine learning that provides a unified framework for training quantum circuits on various backends <a href="https://pennylane.ai/qml/demos/tutorial_variational_classifier/" class="citation-link">[9]</a>.
+              </p>
+
+              <div class="grid lg:grid-cols-2 gap-8">
+                <div>
+                  <h4 class="font-serif text-xl font-bold mb-4 text-gray-900">Installation</h4>
+                  <div class="bg-gray-900 rounded-lg p-4 mb-4">
+                    <code class="text-green-400">
+                                            # Install PennyLane<br/>
+                                            pip install pennylane<br/><br/>
+                                            # Install Qiskit plugin<br/>
+                                            pip install pennylane-qiskit
+                                        </code>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="font-serif text-xl font-bold mb-4 text-gray-900">Device Setup</h4>
+                  <div class="bg-gray-900 rounded-lg p-4 mb-4">
+                    <code class="text-green-400">
+                                            import pennylane as qml<br/><br/>
+                                            # Create device<br/>
+                                            dev = qml.device(&#39;default.qubit&#39;,<br/>
+                                                             wires=2)
+                                        </code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Building VQC -->
+          <div id="building-vqc" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Building the VQC Model in PennyLane</h3>
+
+            <div class="space-y-8">
+              <!-- Data Encoding -->
+              <div class="bg-white rounded-xl p-8 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">1. Data Encoding Circuit</h4>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                  Implement angle encoding by mapping classical features to rotation angles of quantum gates.
+                </p>
+                <div class="bg-gray-900 rounded-lg p-4">
+                  <code class="text-green-400">
+                                        def data_encoding(x):<br/>
+                                            # Encode features into rotation angles<br/>
+                                            qml.RY(x[0], wires=0)  # Feature 1<br/>
+                                            qml.RY(x[1], wires=1)  # Feature 2<br/><br/>
+                                        # Example usage<br/>
+                                        x = np.array([0.5, 0.8])  # Input features
+                                    </code>
+                </div>
+              </div>
+
+              <!-- Parameterized Ansatz -->
+              <div class="bg-white rounded-xl p-8 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">2. Parameterized Ansatz</h4>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                  Create a trainable quantum circuit with rotation and entangling gates.
+                </p>
+                <div class="bg-gray-900 rounded-lg p-4">
+                  <code class="text-green-400">
+                                        def ansatz(theta):<br/>
+                                            # Layer 1: Rotation gates<br/>
+                                            qml.RY(theta[0], wires=0)<br/>
+                                            qml.RY(theta[1], wires=1)<br/><br/>
+                                            # Entangling layer<br/>
+                                            qml.CNOT(wires=[0, 1])<br/><br/>
+                                            # Layer 2: More rotations<br/>
+                                            qml.RY(theta[2], wires=0)<br/>
+                                            qml.RY(theta[3], wires=1)
+                                    </code>
+                </div>
+              </div>
+
+              <!-- Measurement and Cost -->
+              <div class="bg-white rounded-xl p-8 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">3. Measurement and Cost Function</h4>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                  Define the quantum circuit and cost function for training.
+                </p>
+                <div class="bg-gray-900 rounded-lg p-4">
+                  <code class="text-green-400">
+                                        def cost_function(theta, x, y):<br/>
+                                            @qml.qnode(dev)<br/>
+                                            def circuit(theta, x):<br/>
+                                                data_encoding(x)<br/>
+                                                ansatz(theta)<br/>
+                                                return qml.expval(qml.PauliZ(0))<br/><br/>
+                                            # Get expectation value<br/>
+                                            expectation = circuit(theta, x)<br/>
+                                            prob = (expectation + 1) / 2<br/><br/>
+                                            # Cross-entropy loss<br/>
+                                            loss = -y * np.log(prob) - (1-y) * np.log(1-prob)<br/>
+                                            return loss
+                                    </code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Training -->
+          <div id="training" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Training and Evaluating the VQC</h3>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+              <div>
+                <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Training Loop</h4>
+                <div class="bg-gray-900 rounded-lg p-4 mb-6">
+                  <code class="text-green-400">
+                                        # Initialize parameters<br/>
+                                        theta = np.random.uniform(<br/>
+                                            0, 2*np.pi, size=4)<br/><br/>
+                                        # Create optimizer<br/>
+                                        opt = qml.GradientDescentOptimizer(<br/>
+                                            stepsize=0.1)<br/><br/>
+                                        # Training loop<br/>
+                                        for i in range(100):<br/>
+                                            for x, y in zip(X, Y):<br/>
+                                                theta = opt.step(<br/>
+                                                    lambda v: cost_function(v, x, y),<br/>
+                                                    theta)
+                                    </code>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Prediction Function</h4>
+                <div class="bg-gray-900 rounded-lg p-4 mb-6">
+                  <code class="text-green-400">
+                                        def predict(theta, x):<br/>
+                                            @qml.qnode(dev)<br/>
+                                            def circuit(theta, x):<br/>
+                                                data_encoding(x)<br/>
+                                                ansatz(theta)<br/>
+                                                return qml.expval(qml.PauliZ(0))<br/><br/>
+                                            expectation = circuit(theta, x)<br/>
+                                            prob = (expectation + 1) / 2<br/>
+                                            return 1 if prob &gt; 0.5 else 0
+                                    </code>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-8">
+              <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Performance Monitoring</h4>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h5 class="font-semibold text-green-900 mb-2">Convergence Tracking</h5>
+                  <ul class="text-green-800 text-sm space-y-1">
+                    <li>• Monitor cost function decrease</li>
+                    <li>• Track parameter changes</li>
+                    <li>• Watch for overfitting signs</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 class="font-semibold text-green-900 mb-2">Validation Metrics</h5>
+                  <ul class="text-green-800 text-sm space-y-1">
+                    <li>• Accuracy on validation set</li>
+                    <li>• Precision and recall scores</li>
+                    <li>• AUC-ROC evaluation</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Anomaly Detection Section -->
+      <section id="anomaly-detection" class="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div class="container mx-auto px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold mb-12 quantum-text">Application: Anomaly Detection in Transaction Data</h2>
+
+          <!-- Framing Problem -->
+          <div id="framing-problem" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Framing Anomaly Detection as a VQC Problem</h3>
+
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              VQCs can be applied to anomaly detection through both supervised and unsupervised approaches, each with distinct methodologies and advantages for identifying fraudulent transactions.
+            </p>
+
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+              <div class="bg-white rounded-xl p-8 shadow-lg border border-blue-200">
+                <h4 class="font-serif text-2xl font-bold mb-6 text-blue-900">
+                  <i class="fas fa-tags mr-2"></i>
+                  Supervised Detection
+                </h4>
+                <p class="text-blue-800 mb-4">
+                  With labeled data (normal/anomalous), frame as binary classification task.
+                </p>
+                <ul class="text-blue-800 space-y-2">
+                  <li>• Train VQC to learn decision boundary</li>
+                  <li>• Use cross-entropy loss function</li>
+                  <li>• Predict class probabilities for new data</li>
+                  <li>• Effective with quality labeled data</li>
+                </ul>
+              </div>
+
+              <div class="bg-white rounded-xl p-8 shadow-lg border border-purple-200">
+                <h4 class="font-serif text-2xl font-bold mb-6 text-purple-900">
+                  <i class="fas fa-search mr-2"></i>
+                  Unsupervised Detection
+                </h4>
+                <p class="text-purple-800 mb-4">
+                  Without labels, learn model of &#34;normal&#34; behavior.
+                </p>
+                <ul class="text-purple-800 space-y-2">
+                  <li>• Quantum autoencoder approach</li>
+                  <li>• Reconstruction error as anomaly score</li>
+                  <li>• One-class classification methods</li>
+                  <li>• More common in practice</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-8">
+              <h4 class="font-serif text-2xl font-bold mb-6 text-gray-900">Quantum Autoencoder Approach</h4>
+              <p class="text-gray-700 leading-relaxed mb-6">
+                A quantum autoencoder learns to reconstruct normal data with high fidelity while failing to reconstruct anomalies. The reconstruction error serves as an effective anomaly score <a href="https://www.politesi.polimi.it/retrieve/a414fb9f-fc74-4c8b-a12b-64ae24e16320/Daniel_Sima_Thesis.pdf" class="citation-link">[77]</a>.
+              </p>
+
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg p-4 text-center">
+                  <i class="fas fa-compress-arrows-alt text-3xl text-indigo-600 mb-3"></i>
+                  <h5 class="font-semibold text-gray-900">Encoder</h5>
+                  <p class="text-gray-600 text-sm">Compresses input to latent space</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center">
+                  <i class="fas fa-expand-arrows-alt text-3xl text-purple-600 mb-3"></i>
+                  <h5 class="font-semibold text-gray-900">Decoder</h5>
+                  <p class="text-gray-600 text-sm">Reconstructs from latent representation</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center">
+                  <i class="fas fa-chart-line text-3xl text-pink-600 mb-3"></i>
+                  <h5 class="font-semibold text-gray-900">Anomaly Score</h5>
+                  <p class="text-gray-600 text-sm">Reconstruction error magnitude</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Case Study -->
+          <div id="case-study" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Case Study: Detecting Fraudulent Transactions</h3>
+
+            <div class="grid lg:grid-cols-3 gap-8 mb-8">
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-gray-900">Data Preprocessing</h4>
+                <ul class="text-gray-700 space-y-2">
+                  <li>• Feature scaling to [0, 2π]</li>
+                  <li>• Categorical variable encoding</li>
+                  <li>• Train/validation/test split</li>
+                  <li>• Handling class imbalance</li>
+                </ul>
+              </div>
+
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-gray-900">VQC Design</h4>
+                <ul class="text-gray-700 space-y-2">
+                  <li>• 3 qubits for transaction features</li>
+                  <li>• Angle encoding scheme</li>
+                  <li>• Hardware-efficient ansatz</li>
+                  <li>• Pauli-Z measurement</li>
+                </ul>
+              </div>
+
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-gray-900">Decision Threshold</h4>
+                <ul class="text-gray-700 space-y-2">
+                  <li>• Probability threshold tuning</li>
+                  <li>• Precision-recall trade-off</li>
+                  <li>• Business requirements alignment</li>
+                  <li>• Cost-benefit analysis</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="bg-gray-900 rounded-xl p-8 text-white">
+              <h4 class="font-serif text-2xl font-bold mb-6">Sample Transaction Features</h4>
+              <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                  <h5 class="font-semibold text-green-400 mb-2">Numerical Features</h5>
+                  <ul class="text-green-300 text-sm space-y-1">
+                    <li>• Transaction amount</li>
+                    <li>• Time of day</li>
+                    <li>• Account balance</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 class="font-semibold text-blue-400 mb-2">Categorical Features</h5>
+                  <ul class="text-blue-300 text-sm space-y-1">
+                    <li>• Merchant category</li>
+                    <li>• Transaction type</li>
+                    <li>• Location code</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 class="font-semibold text-purple-400 mb-2">Engineered Features</h5>
+                  <ul class="text-purple-300 text-sm space-y-1">
+                    <li>• Velocity patterns</li>
+                    <li>• Historical averages</li>
+                    <li>• Risk scores</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Evaluation -->
+          <div id="evaluation" class="mb-16">
+            <h3 class="font-serif text-3xl font-bold mb-8 text-gray-900">Performance Evaluation for Anomaly Detection</h3>
+
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              Proper evaluation requires metrics that account for class imbalance and the business costs of false positives versus false negatives.
+            </p>
+
+            <!-- Key Metrics Table -->
+            <div class="overflow-x-auto mb-8">
+              <table class="w-full bg-white rounded-xl shadow-lg border border-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-4 text-left font-serif text-lg font-bold text-gray-900">Metric</th>
+                    <th class="px-6 py-4 text-left font-serif text-lg font-bold text-gray-900">Formula</th>
+                    <th class="px-6 py-4 text-left font-serif text-lg font-bold text-gray-900">Interpretation</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-semibold text-blue-900">Precision</td>
+                    <td class="px-6 py-4 text-gray-700">TP / (TP + FP)</td>
+                    <td class="px-6 py-4 text-gray-700">Of flagged transactions, how many were actually fraudulent?</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-semibold text-purple-900">Recall</td>
+                    <td class="px-6 py-4 text-gray-700">TP / (TP + FN)</td>
+                    <td class="px-6 py-4 text-gray-700">Of all fraudulent transactions, how many were correctly identified?</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-semibold text-green-900">F1-Score</td>
+                    <td class="px-6 py-4 text-gray-700">2PR/(P+R)</td>
+                    <td class="px-6 py-4 text-gray-700">Harmonic mean balancing precision and recall</td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-semibold text-pink-900">AUC-ROC</td>
+                    <td class="px-6 py-4 text-gray-700">Area under curve</td>
+                    <td class="px-6 py-4 text-gray-700">Overall ability to distinguish classes across thresholds</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-gray-900">ROC and Precision-Recall Curves</h4>
+                <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                  <img src="https://kimi-web-img.moonshot.cn/img/media.springernature.com/c5315aacd68c543dc173c3828ce4b5f65244b87d.png" alt="ROC curve showing true positive rate vs false positive rate" class="w-full" size="medium" aspect="wide" style="linedrawing" query="ROC curve" referrerpolicy="no-referrer" data-modified="1" data-score="0.00"/>
+                </div>
+                <p class="text-gray-600 text-sm">
+                  ROC curves plot TPR vs FPR while PR curves show precision vs recall. For imbalanced data, PR curves often provide more informative evaluation.
+                </p>
+              </div>
+
+              <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <h4 class="font-serif text-xl font-bold mb-4 text-gray-900">Handling Class Imbalance</h4>
+                <ul class="text-gray-700 space-y-3">
+                  <li class="flex items-start">
+                    <i class="fas fa-balance-scale text-blue-500 mr-2 mt-1"></i>
+                    <span><strong>Resampling:</strong> Oversample minority class or undersample majority class</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-weight-hanging text-purple-500 mr-2 mt-1"></i>
+                    <span><strong>Cost-sensitive learning:</strong> Assign higher penalties to minority class errors</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-filter text-green-500 mr-2 mt-1"></i>
+                    <span><strong>Specialized algorithms:</strong> Use methods designed for imbalanced data</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="bg-gray-900 text-white py-16">
+        <div class="container mx-auto px-8 max-w-4xl">
+          <div class="text-center mb-8">
+            <h2 class="font-serif text-3xl font-bold mb-4">The Future of Quantum Machine Learning</h2>
+            <p class="text-gray-300 leading-relaxed">
+              Variational Quantum Classifiers represent a significant step toward practical quantum advantage in machine learning applications. As quantum hardware continues to improve, VQCs will become increasingly powerful tools for complex pattern recognition and anomaly detection tasks.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-8 text-center">
+            <div>
+              <i class="fas fa-rocket text-3xl text-indigo-400 mb-4"></i>
+              <h3 class="font-semibold mb-2">Scalability</h3>
+              <p class="text-gray-400 text-sm">VQCs designed to scale with advancing quantum hardware capabilities</p>
+            </div>
+            <div>
+              <i class="fas fa-cogs text-3xl text-purple-400 mb-4"></i>
+              <h3 class="font-semibold mb-2">Integration</h3>
+              <p class="text-gray-400 text-sm">Hybrid quantum-classical approaches bridge current technology gaps</p>
+            </div>
+            <div>
+              <i class="fas fa-chart-line text-3xl text-pink-400 mb-4"></i>
+              <h3 class="font-semibold mb-2">Performance</h3>
+              <p class="text-gray-400 text-sm">Potential for quantum advantage in high-dimensional pattern recognition</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+        // Smooth scrolling for TOC links
+        document.querySelectorAll('.toc-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const offset = 80; // Account for any fixed headers
+                    const targetPosition = targetElement.offsetTop - offset;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Highlight active section in TOC
+        function updateActiveTOC() {
+            const sections = document.querySelectorAll('section[id], div[id]');
+            const tocLinks = document.querySelectorAll('.toc-link');
+            
+            let currentSection = '';
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    currentSection = section.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Mobile TOC toggle
+        const tocToggle = document.getElementById('toc-toggle');
+        const toc = document.getElementById('toc');
+        
+        if (tocToggle && toc) {
+            tocToggle.addEventListener('click', function() {
+                toc.classList.toggle('open');
+            });
+            
+            // Close TOC when clicking outside
+            document.addEventListener('click', function(event) {
+                if (toc.classList.contains('open') && 
+                    !toc.contains(event.target) && 
+                    event.target !== tocToggle) {
+                    toc.classList.remove('open');
+                }
+            });
+        }
+
+        // Throttled scroll event listener
+        let ticking = false;
+        function handleScroll() {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    updateActiveTOC();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll);
+        
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e0e7ff',
+                primaryTextColor: '#1e40af',
+                primaryBorderColor: '#4f46e5',
+                lineColor: '#6b7280',
+                secondaryColor: '#dbeafe',
+                tertiaryColor: '#f0f9ff',
+                background: '#ffffff',
+                mainBkg: '#ffffff',
+                secondBkg: '#f8fafc',
+                tertiaryBkg: '#f1f5f9',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '14px'
+            },
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // Initialize Mermaid Controls for zoom and pan
+        function initializeMermaidControls() {
+            const containers = document.querySelectorAll('.mermaid-container');
+
+            containers.forEach(container => {
+                const mermaidElement = container.querySelector('.mermaid');
+                let scale = 1;
+                let isDragging = false;
+                let startX, startY, translateX = 0, translateY = 0;
+
+                // 触摸相关状态
+                let isTouch = false;
+                let touchStartTime = 0;
+                let initialDistance = 0;
+                let initialScale = 1;
+                let isPinching = false;
+
+                // Zoom controls
+                const zoomInBtn = container.querySelector('.zoom-in');
+                const zoomOutBtn = container.querySelector('.zoom-out');
+                const resetBtn = container.querySelector('.reset-zoom');
+                const fullscreenBtn = container.querySelector('.fullscreen');
+
+                function updateTransform() {
+                    mermaidElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+                    if (scale > 1) {
+                        container.classList.add('zoomed');
+                    } else {
+                        container.classList.remove('zoomed');
+                    }
+
+                    mermaidElement.style.cursor = isDragging ? 'grabbing' : 'grab';
+                }
+
+                if (zoomInBtn) {
+                    zoomInBtn.addEventListener('click', () => {
+                        scale = Math.min(scale * 1.25, 4);
+                        updateTransform();
+                    });
+                }
+
+                if (zoomOutBtn) {
+                    zoomOutBtn.addEventListener('click', () => {
+                        scale = Math.max(scale / 1.25, 0.3);
+                        if (scale <= 1) {
+                            translateX = 0;
+                            translateY = 0;
+                        }
+                        updateTransform();
+                    });
+                }
+
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => {
+                        scale = 1;
+                        translateX = 0;
+                        translateY = 0;
+                        updateTransform();
+                    });
+                }
+
+                if (fullscreenBtn) {
+                    fullscreenBtn.addEventListener('click', () => {
+                        if (container.requestFullscreen) {
+                            container.requestFullscreen();
+                        } else if (container.webkitRequestFullscreen) {
+                            container.webkitRequestFullscreen();
+                        } else if (container.msRequestFullscreen) {
+                            container.msRequestFullscreen();
+                        }
+                    });
+                }
+
+                // Mouse Events
+                mermaidElement.addEventListener('mousedown', (e) => {
+                    if (isTouch) return; // 如果是触摸设备，忽略鼠标事件
+
+                    isDragging = true;
+                    startX = e.clientX - translateX;
+                    startY = e.clientY - translateY;
+                    mermaidElement.style.cursor = 'grabbing';
+                    updateTransform();
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging && !isTouch) {
+                        translateX = e.clientX - startX;
+                        translateY = e.clientY - startY;
+                        updateTransform();
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging && !isTouch) {
+                        isDragging = false;
+                        mermaidElement.style.cursor = 'grab';
+                        updateTransform();
+                    }
+                });
+
+                document.addEventListener('mouseleave', () => {
+                    if (isDragging && !isTouch) {
+                        isDragging = false;
+                        mermaidElement.style.cursor = 'grab';
+                        updateTransform();
+                    }
+                });
+
+                // 获取两点之间的距离
+                function getTouchDistance(touch1, touch2) {
+                    return Math.hypot(
+                        touch2.clientX - touch1.clientX,
+                        touch2.clientY - touch1.clientY
+                    );
+                }
+
+                // Touch Events - 触摸事件处理
+                mermaidElement.addEventListener('touchstart', (e) => {
+                    isTouch = true;
+                    touchStartTime = Date.now();
+
+                    if (e.touches.length === 1) {
+                        // 单指拖动
+                        isPinching = false;
+                        isDragging = true;
+
+                        const touch = e.touches[0];
+                        startX = touch.clientX - translateX;
+                        startY = touch.clientY - translateY;
+
+                    } else if (e.touches.length === 2) {
+                        // 双指缩放
+                        isPinching = true;
+                        isDragging = false;
+
+                        const touch1 = e.touches[0];
+                        const touch2 = e.touches[1];
+                        initialDistance = getTouchDistance(touch1, touch2);
+                        initialScale = scale;
+                    }
+
+                    e.preventDefault();
+                }, { passive: false });
+
+                mermaidElement.addEventListener('touchmove', (e) => {
+                    if (e.touches.length === 1 && isDragging && !isPinching) {
+                        // 单指拖动
+                        const touch = e.touches[0];
+                        translateX = touch.clientX - startX;
+                        translateY = touch.clientY - startY;
+                        updateTransform();
+
+                    } else if (e.touches.length === 2 && isPinching) {
+                        // 双指缩放
+                        const touch1 = e.touches[0];
+                        const touch2 = e.touches[1];
+                        const currentDistance = getTouchDistance(touch1, touch2);
+
+                        if (initialDistance > 0) {
+                            const newScale = Math.min(Math.max(
+                                initialScale * (currentDistance / initialDistance),
+                                0.3
+                            ), 4);
+                            scale = newScale;
+                            updateTransform();
+                        }
+                    }
+
+                    e.preventDefault();
+                }, { passive: false });
+
+                mermaidElement.addEventListener('touchend', (e) => {
+                    // 重置状态
+                    if (e.touches.length === 0) {
+                        isDragging = false;
+                        isPinching = false;
+                        initialDistance = 0;
+
+                        // 延迟重置isTouch，避免鼠标事件立即触发
+                        setTimeout(() => {
+                            isTouch = false;
+                        }, 100);
+                    } else if (e.touches.length === 1 && isPinching) {
+                        // 从双指变为单指，切换为拖动模式
+                        isPinching = false;
+                        isDragging = true;
+
+                        const touch = e.touches[0];
+                        startX = touch.clientX - translateX;
+                        startY = touch.clientY - translateY;
+                    }
+
+                    updateTransform();
+                });
+
+                mermaidElement.addEventListener('touchcancel', (e) => {
+                    isDragging = false;
+                    isPinching = false;
+                    initialDistance = 0;
+
+                    setTimeout(() => {
+                        isTouch = false;
+                    }, 100);
+
+                    updateTransform();
+                });
+
+                // Enhanced wheel zoom with better center point handling
+                container.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const rect = container.getBoundingClientRect();
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+
+                    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                    const newScale = Math.min(Math.max(scale * delta, 0.3), 4);
+
+                    // Adjust translation to zoom towards center
+                    if (newScale !== scale) {
+                        const scaleDiff = newScale / scale;
+                        translateX = translateX * scaleDiff;
+                        translateY = translateY * scaleDiff;
+                        scale = newScale;
+
+                        if (scale <= 1) {
+                            translateX = 0;
+                            translateY = 0;
+                        }
+
+                        updateTransform();
+                    }
+                });
+
+                // Initialize display
+                updateTransform();
+            });
+        }
+
+        // Initialize the controls when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize mermaid controls
+            initializeMermaidControls();
+            
+            // Close mobile TOC when clicking on a link
+            document.querySelectorAll('.toc-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 1024) {
+                        toc.classList.remove('open');
+                    }
+                });
+            });
+        });
+    </script>
+  
+
+</body>
+</html>
